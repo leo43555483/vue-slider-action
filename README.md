@@ -6,7 +6,7 @@ npm install --save vue-slider-action
 ```
 
 ### Basic Usage
-```
+```js
 import { SliderAction } from 'vue-slider-action';
 //or    
 import SliderAction from 'vue-slider-action';
@@ -24,7 +24,7 @@ Vue.use(SliderAction);
 
  
 ### example
-```
+```html
 <div id="app">
     <div v-for="(item, i) in list" :key="item.key" class="list_item">
       <slider-action :autoClose="true" :text="item.title">
@@ -51,6 +51,8 @@ Vue.use(SliderAction);
         </slider-action>
       </div>
   </div>
+  ```
+  ``` js
   <script>
   export default {
   name: 'App',

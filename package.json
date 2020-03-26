@@ -1,7 +1,7 @@
 {
-  "name": "main",
+  "name": "vue-slider-action",
   "version": "0.1.0",
-  "description": "vue swipe actions",
+  "description": "vue swipe action",
   "private": false,
   "main": "dist/vue-slider-action.common.js",
   "scripts": {

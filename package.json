@@ -1,0 +1,44 @@
+{
+  "name": "main",
+  "version": "0.1.0",
+  "description": "vue swipe actions",
+  "private": false,
+  "main": "dist/vue-slider-action.common.js",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build --target lib --name vue-slider-action src/index.js",
+    "lint": "vue-cli-service lint"
+  },
+  "author": "zhl <664995185@qq.com>",
+  "keywords": [
+		"vuejs",
+		"vue-swipe-actions",
+		"vue",
+		"swipe"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "core-js": "^3.6.4",
+    "vue": "^2.6.11"
+  },
+  "engines": {
+		"node": ">= 8.11.4",
+		"npm": ">= 5.6.0"
+	},
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.2.0",
+    "@vue/cli-plugin-eslint": "~4.2.0",
+    "@vue/cli-service": "~4.2.0",
+    "@vue/eslint-config-airbnb": "^5.0.2",
+    "babel-eslint": "^10.0.3",
+    "chai": "^4.1.2",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-vue": "^6.1.2",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "repository": {
+		"type": "git",
+		"url": "https://github.com/leo43555483/vue-slider-action"
+	}
+}

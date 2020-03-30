@@ -21,7 +21,7 @@
           {{text}}
         </template>
       </div>
-      <div class="slider-item-extra">
+      <div class="slider-item-extra" v-if="showSlot('extra')">
         <slot name="extra"></slot>
       </div>
       <span class="slider-arrow" v-if="showArrow"></span>
@@ -37,12 +37,16 @@ const STATUS_ARRIVE = 'arrive';
 const STATUS_RESET = 'reset';
 const STATUS_MOVING = 'moving';
 const STATUS_RESTING = 'reseting';
+const MINI_DISTANCE = 5;
+// const MINI_X_OFFSET = 50;
 const { abs } = Math;
 export default {
   name: 'SliderAction',
   data() {
     return {
+      documentBody: null,
       startX: 0,
+      startY: 0,
       moveX: 0,
       isHolding: false,
       status: STATUS_RESET,
@@ -86,14 +90,18 @@ export default {
   },
   computed: {
     styles() {
-      return `touch-action: pan-y;transform: translate3d(${this.moveX}px, 0,0) scale(1);`;
+      const { status, isHolding } = this;
+      if (status !== STATUS_RESET || isHolding) {
+        return `touch-action: pan-y;transform: translate3d(${this.moveX}px, 0,0) scale(1);`;
+      }
+      return null;
     },
     isMoving() {
       const { status, isHolding } = this;
       if (status === STATUS_MOVING) {
         return true;
       }
-      if (status === STATUS_RESTING && !isHolding) {
+      if (status === STATUS_RESET && isHolding) {
         return true;
       }
       return false;
@@ -101,31 +109,44 @@ export default {
   },
   methods: {
     removePreventClass() {
-      const body = document.querySelector('body');
-      body.classList.remove('slider-actions-no-event');
+      this.documentBody.classList.remove('slider-actions-no-event');
     },
     preventDefaultEVent() {
-      const body = document.querySelector('body');
-      body.classList.add('slider-actions-no-event');
+      this.documentBody.classList.add('slider-actions-no-event');
     },
-    throttle(fn, delay) {
+    throttle(fn, delay = 20) {
       let pre = 0;
+      let timer = null;
       return (...args) => {
         const cur = Date.now();
         const remeaning = delay - (cur - pre);
         if (remeaning <= 0) {
           fn.apply(this, args);
           pre = Date.now();
+        } else {
+          timer = setTimeout(() => {
+            clearTimeout(timer);
+            fn.apply(this, args);
+          }, remeaning);
         }
       };
     },
+    isVertical(x, y) {
+      const offsetX = abs(x - this.startX);
+      const offsetY = abs(y - this.startY);
+      if (offsetY > offsetX && offsetY > MINI_DISTANCE) return true;
+      return false;
+    },
     onClick(e) {
       const { autoClose } = this;
-      const isAutoClose = typeof autoClose === 'function' ? autoClose(e) : autoClose;
-      if (this.status === STATUS_ARRIVE && isAutoClose) {
-        this.restPosition(0);
+      if (this.status === STATUS_ARRIVE) {
+        const isAutoClose = typeof autoClose === 'function' ? autoClose(e) : autoClose;
+        if (isAutoClose) this.restPosition(0);
       }
       if (this.handleClick) this.handleClick(e);
+      if (this.isHolding) {
+        this.isHolding = false;
+      }
     },
     setStatus(status) {
       this.status = status;
@@ -136,23 +157,26 @@ export default {
       }
     },
     onTouchStart(e) {
-      this.startX = this.getPointX(e);
+      this.startX = this.getPoint(e).clientX;
+      this.startY = this.getPoint(e).clientY;
       this.preX = this.startX;
       // 当前是左侧操作块滑动还是右侧滑动
       this.initialOffset = this.moveX;
       this.isHolding = true;
     },
     onTouchEnd(e) {
-      const moveX = this.getPointX(e);
+      const moveX = this.getPoint(e).clientX;
       const distance = this.getDistance(moveX);
-      if (distance === 0) return;
       const direction = this.theDirection(moveX, this.preX);
       const actionWith = this.getFinalPosition(direction);
       let { threshold } = this;
+      // if (abs(distance) === abs(actionWith) || distance === 0) {
+      //   this.isHolding = false;
+      //   return;
+      // }
       if (this.threshold > 1 || this.threshold <= 0) {
         threshold = DEFAULT_THRESHOLD;
       }
-      if (abs(distance) === abs(actionWith)) return;
       if (actionWith !== 0 && abs(distance) >= abs(actionWith) * threshold) {
         this.moveToFinal(actionWith, 0);
       } else {
@@ -179,22 +203,23 @@ export default {
       return parseInt(distance);
     },
     onMove(ev) {
-      function run(e) {
-        const moveX = this.getPointX(e);
+      return this.throttle((e) => {
+        const moveX = this.getPoint(e).clientX;
+        const moveY = this.getPoint(e).clientY;
+        const { status } = this;
+        if (status === STATUS_RESET && this.isVertical(moveX, moveY)) return;
         const direction = this.theDirection(moveX, this.preX);
         if (this.slideArea === null) {
           this.setSlideArea(direction);
         }
         if (this.invalidMove(moveX, this.startX)) {
-          this.moveToFinal(this.getFinalPosition(direction), moveX);
+          this.moveToFinal(this.getFinalPosition(direction), null);
           return;
         }
         const distance = this.getDistance(moveX);
         this.preX = moveX;
         this.walk(distance);
-      }
-      const move = this.throttle(run, 16);
-      move(ev);
+      })(ev);
     },
     walk(position) {
       this.setStatus(STATUS_MOVING);
@@ -209,7 +234,9 @@ export default {
       }
     },
     restPosition(preX) {
-      this.preX = preX;
+      if (preX !== null) {
+        this.preX = preX;
+      }
       this.slideArea = null;
       this.setStatus(STATUS_RESTING);
       this.moveTo(0);
@@ -251,8 +278,8 @@ export default {
     theDirection(moveX, preX) {
       return moveX - preX > 0 ? 'right' : 'left';
     },
-    getPointX(e) {
-      return e.changedTouches[0].clientX;
+    getPoint(e) {
+      return e.changedTouches[0];
     },
     showSlot(where) {
       return this.$slots[where];
@@ -269,6 +296,7 @@ export default {
     },
   },
   mounted() {
+    this.documentBody = document.body;
     this.setClientWith('right', 'right');
     this.setClientWith('left', 'left');
   },

@@ -1,15 +1,16 @@
-# vue-slider-action
-**simple swipe action for vue**
+# vue-slider-actions
+**simple swipe action for vue**  
+**vue 移动端滑动操作组件,支持左右滑动**
 ## Installation
 ```
-npm install --save vue-slider-action
+npm install --save vue-slider-actions
 ```
 
 ### Basic Usage
 ```js
-import { SliderAction } from 'vue-slider-action';
+import { SliderAction } from 'vue-slider-actions';
 //or    
-import SliderAction from 'vue-slider-action';
+import SliderAction from 'vue-slider-actions';
 Vue.use(SliderAction);
 ```
 
@@ -55,7 +56,7 @@ Vue.use(SliderAction);
   ``` js
   <script>
   export default {
-  name: 'App',
+    name: 'App',
     data() {
       return{
         list: [

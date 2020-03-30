@@ -13,6 +13,7 @@
 }
 .slider-moving .slider-transform{
   transition:none;
+  will-change: transform;
 }
 .slider-transform{
   transition: all .25s ease;
@@ -31,6 +32,7 @@
   flex: 1;
   width: auto;
   text-align: left;
+  overflow: hidden;
 }
 .slider-wrap{
   position: relative;
@@ -49,5 +51,4 @@
 }
 .slider-actions-no-event{
   user-select: none;
-  /* pointer-events: none; */
 }

@@ -19,7 +19,7 @@ Vue.use(SliderAction);
 | ---------------- | --------- |-------- |-------|------------------ |
 | text             | String    | false   |       | text of button    |
 | showArrow        | Boolean   | false   | true   | whether to show arrow|
-| threshold        | Number    | false   |  0.5   |With that property you can fine tune when actions are considered open. Based on action with.|
+| threshold        | Number    | false   |  0.5   |With that property you can fine tune when actions are considered open. Based on action withd|
 | handleClick | Function | false | | Emitted on click item|
 | autoClose | Function, Boolean | false | false | Whether to close automatically| 
 

@@ -23,7 +23,12 @@ Vue.use(SliderAction);
 | handleClick | Function | false | | Emitted on click item|
 | autoClose | Function, Boolean | false | false | Whether to close automatically| 
 
- 
+ ### slots 
+ | Prop             | Description        |
+| ---------------- |------------------ |
+| left             | left button    |
+| right             | right button    |
+| default             | item text    |
 ### example
 ```html
 <div id="app">
